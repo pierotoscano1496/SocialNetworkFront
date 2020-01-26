@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+
+<body>
+    <div>
+        <input id="txtNombre" type="text" placeholder="Ingresa tu nombre" />
+        <br>
+        <button onclick="enviarTexto();">Enviar</button>
+        <div id="response"></div>
+        <p id="txtResult"></p>
+    </div>
+</body>
+<script>
+    const wsEnviarTexto = new WebSocket('wss://localhost:5001/enviarMensaje');
+    wsEnviarTexto.onopen = () => {
+        console.log("Conectado");
+    };
+
+    wsEnviarTexto.onmessage = (e) => {
+        const mensaje = JSON.parse(e.data);
+        console.log(mensaje);
+        document.getElementById("txtResult").innerHTML = "<p>" + mensaje.Receptor + " te dice:</p><p>" + mensaje.Texto + "</p>";
+    };
+
+    wsEnviarTexto.onerror = (e) => {
+        console.log(e);
+    };
+
+    wsEnviarTexto.onclose = (e) => {
+        console.log('Conexion cerrada');
+        console.log(e);
+    };
+
+    function enviarTexto() {
+        var nombre = document.getElementById("txtNombre").value;
+        wsEnviarTexto.send(nombre);
+    }
+</script>
+
+</html>
